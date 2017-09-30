@@ -6,7 +6,8 @@
     <title>每日一句</title>
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">  
 	<meta name="app-mobile-web-app-capable" content="yes"> 
-	<meta name="zhengoma" content="http://www.zhengoma.cn" />
+	<meta name="author" content="zhengoma" />
+	<meta name="website" content="http://www.zhengoma.cn" />
 	<link href="https://cdn.bootcss.com/Swiper/3.4.2/css/swiper.min.css" rel="stylesheet">
 	  <style>
     html, body {
@@ -104,7 +105,7 @@
 	<script>
 	function trimStr(str){return str.replace(/(^\s*)|(\s*$)/g,"");}
 	function CurentTime(date,num)
-    { 
+        { 
 		if(date){
 			var now = new Date(date.replace(/-/g, "/"));	
 		}else{
@@ -149,7 +150,7 @@
 	 }
     
     </script>
-<script type="text/javascript">	
+    <script type="text/javascript">	
 	var app = new Vue({
 		el: '#app',
 	    data:{			
@@ -165,7 +166,7 @@
 				app.dataid.push(this.dateline);	
 				$.ajax({
 					type:"get",
-					url:"http://open.iciba.com/dsapi/?date="+this.dateline,/*url写异域的请求地址*/
+					url:"https://open.iciba.com/dsapi/?date="+this.dateline,
 					dataType:"jsonp",					
 					
 					success:function(res){	
