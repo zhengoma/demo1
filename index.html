@@ -4,11 +4,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>每日一句</title>
-        <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">  
-	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta name="app-mobile-web-app-capable" content="yes"> 
 	<meta name="author" content="zhengoma" />
-	<meta name="website" content="http://www.zhengoma.cn" />
 	<link href="https://cdn.bootcss.com/Swiper/3.4.2/css/swiper.min.css" rel="stylesheet">
 	  <style>
     html, body {
@@ -81,13 +80,16 @@
 		z-index: 10;
 		background: rgba(0, 0, 0, 0.5);
 	}
-	small{font-size:20px;}
+	
+	small{
+		font-size:20px;
+	}
 	@media screen and (min-width: 938px) {
 		.txt {
 		  background-size: 100% auto;
 		  background-position-y: 50%;
 		}
-	}	  
+	  }
     </style>
 	
 	<script src="https://cdn.bootcss.com/vue/2.4.4/vue.min.js"></script>
@@ -113,7 +115,8 @@
 	<script>
 	function trimStr(str){return str.replace(/(^\s*)|(\s*$)/g,"");}
 	function CurentTime(date,num)
-        { 
+    { 
+	
 		if(date){
 			var timeStamp=Date.parse(new Date(date));			
 			if(num!=null)timeStamp+=parseInt(num);			
@@ -122,18 +125,19 @@
 		} 
 		var now = new Date(timeStamp);	
 				
-		var year = now.getFullYear();       //年
-		var month = now.getMonth() + 1;     //月
-		var day = now.getDate();  	    //日  
-		var clock = year + "-";       
-		if(month < 10)
-		    clock += "0";       
-		clock += month + "-";       
-		if(day < 10)
-		    clock += "0";           
-		clock += day; 
-		clock=clock.toString();			
-		return(clock);
+        var year = now.getFullYear();       //年
+        var month = now.getMonth() + 1;     //月
+		var day = now.getDate();          //日  
+		
+        var clock = year + "-";       
+        if(month < 10)
+            clock += "0";       
+        clock += month + "-";       
+        if(day < 10)
+            clock += "0";           
+        clock += day; 
+	clock=clock.toString();			
+        return(clock); 
     }
 	</script>
 	 <script>
@@ -144,17 +148,17 @@
 			},	
 			onSlideNextStart: function(swiper){
 				console.log('右滑动事件触发了;');
-				app.dateline=CurentTime(app.dateline,-1);
+				app.dateline=CurentTime(app.dateline,-86400000);
 			},		
 			onSlidePrevStart: function(swiper){
 				console.log('左滑动事件触发了;');
-				app.dateline=CurentTime(app.dateline,+1);
+				app.dateline=CurentTime(app.dateline,+86400000);
 			}		
 		});
 	 }
     
     </script>
-    <script type="text/javascript">	
+<script type="text/javascript">	
 	var app = new Vue({
 		el: '#app',
 	    data:{			
@@ -168,10 +172,9 @@
 					return false;		
 				}
 				app.dataid.push(this.dateline);	
-				console.log(app.dataid);
 				$.ajax({
 					type:"get",
-					url:"https://open.iciba.com/dsapi/?date="+this.dateline,
+					url:"https://open.iciba.com/dsapi/?date="+this.dateline,/*url写异域的请求地址*/
 					dataType:"jsonp",					
 					
 					success:function(res){	
@@ -185,7 +188,7 @@
 					}					
 				});	
 				if(app.dataid.length==1){
-					this.dateline=CurentTime(this.dateline,-1);
+					this.dateline=CurentTime(this.dateline,-86400000);
 				}				
 		    }			
 		},
