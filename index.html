@@ -165,6 +165,7 @@
 					return false;		
 				}
 				app.dataid.push(this.dateline);	
+				console.log(app.dataid);
 				$.ajax({
 					type:"get",
 					url:"https://open.iciba.com/dsapi/?date="+this.dateline,
