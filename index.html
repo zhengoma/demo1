@@ -84,18 +84,24 @@
 	small{
 		font-size:20px;
 	}
+	   
+
+
 	@media screen and (min-width: 938px) {
 		.txt {
 		  background-size: 100% auto;
 		  background-position-y: 50%;
 		}
 	  }
-	[v-cloak] {
-	   display: none;
-	}	  
     </style>
 	
 	<script src="https://cdn.bootcss.com/vue/2.4.4/vue.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/Swiper/3.4.2/js/swiper.min.js"></script>
+	<style>
+		[v-cloak] {   display: none;  } 
+    </style>
+
   </head>
   <body>
     <!-- Swiper -->
@@ -113,8 +119,7 @@
         </div>       
     </div>
 
-	<script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
-	<script src="https://cdn.bootcss.com/Swiper/3.4.2/js/swiper.min.js"></script>
+
 	<script>
 	function trimStr(str){return str.replace(/(^\s*)|(\s*$)/g,"");}
 	function CurentTime(date,num)
@@ -139,7 +144,7 @@
         if(day < 10)
             clock += "0";           
         clock += day; 
-	clock=clock.toString();			
+		clock=clock.toString();			
         return(clock); 
     }
 	</script>
@@ -149,6 +154,7 @@
 			fade: {
 				crossFade: false,	
 			},	
+			loop : true,
 			onSlideNextStart: function(swiper){
 				console.log('右滑动事件触发了;');
 				app.dateline=CurentTime(app.dateline,-86400000);
@@ -162,32 +168,58 @@
     
     </script>
 <script type="text/javascript">	
+
+	var storage=window.localStorage;	
+	//console.log(storage);
+	//storage.clear();
+
 	var app = new Vue({
 		el: '#app',
-	    data:{			
+	    data:{	
+			today:'',
 		    dateline: '',	
 			dataid:[],			
 			arr:[]
 	    },
-		methods:{				
-			ajaxpost:function(){				
+		methods:{	
+			
+			ajaxpost:function(){	
 				if(app.dataid.indexOf(this.dateline)>-1){
 					return false;		
 				}
-				app.dataid.push(this.dateline);	
+				if(this.today<this.dateline){
+					//console.log(Date.parse(new Date(this.today)));
+					//console.log(Date.parse(new Date(this.dateline)));
+					console.log("the day can't later than today !");
+					return false;				
+				}
+				
+				var dt=storage.getItem(this.dateline);					
+				if(dt!=null){
+					app.arr.push(JSON.parse(dt));
+					app.dataid.push(this.dateline);
+					console.log(this.dateline+"       local");										
+					if(app.dataid.length==1){							
+						this.dateline=CurentTime(this.dateline,-86400000);
+					}
+					if (typeof(swiper) != "undefined") 	swiper.reLoop();
+					return false;
+				}
+				app.dataid.push(this.dateline);											
 				$.ajax({
 					type:"get",
 					url:"https://open.iciba.com/dsapi/?date="+this.dateline,/*url写异域的请求地址*/
 					dataType:"jsonp",					
 					
 					success:function(res){	
-						console.log(res.dateline);					
-						app.arr.push(res);						
-						swiper.reLoop();
-												
+						console.log(res.dateline+"       ajax");												
+						app.arr.push(res);	
+						storage.setItem(res.dateline,JSON.stringify(res));						
+						if (typeof(swiper) != "undefined") 	swiper.reLoop();						
+
 					},
 					 error:function(err){
-						console.log(err);
+						console.log(err.status);
 					}					
 				});	
 				if(app.dataid.length==1){
@@ -196,14 +228,19 @@
 		    }			
 		},
 		watch:{
+		
 			dateline:function(){					
 				this.ajaxpost();
 			}
 		},
-		created: function () {				
-			this.dateline=CurentTime();	
+		created: function () {
+			this.today=CurentTime();
+			
+			
+			
 		},
 		mounted:function(){
+			this.dateline=CurentTime();	
 			
 		}
 		
