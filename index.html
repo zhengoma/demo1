@@ -9,6 +9,7 @@
 	<meta name="app-mobile-web-app-capable" content="yes"> 
 	<meta name="author" content="zhengoma" />
 	<link href="https://cdn.bootcss.com/Swiper/3.4.2/css/swiper.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/element-ui/1.3.7/theme-default/index.css" rel="stylesheet">
 	  <style>
     html, body {
         position: relative;
@@ -84,6 +85,24 @@
 	small{
 		font-size:20px;
 	}
+	.el-date-editor{
+		position: fixed;
+		top: 10px;
+		left: 10px;
+		z-index: 10;
+	}
+	.el-icon-search{
+		position: fixed;
+		top: 10px;
+		left: 10px;
+		z-index: 10;
+		width: 26px;
+		height: 26px;
+		line-height: 26px;
+		text-align: center;
+		background-color: rgba(193, 193, 193, 0.16);
+		border-radius: 50%;
+	}
 	   
 
 
@@ -96,6 +115,7 @@
     </style>
 	
 	<script src="https://cdn.bootcss.com/vue/2.4.4/vue.min.js"></script>
+	<script src="https://cdn.bootcss.com/element-ui/1.3.7/index.js"></script>
 	<script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/Swiper/3.4.2/js/swiper.min.js"></script>
 	<style>
@@ -103,9 +123,17 @@
     </style>
 
   </head>
-  <body>
+
     <!-- Swiper -->
     <div class="swiper-container" id="app" v-cloak>
+	<i class="el-icon-search" v-if="datepickerVisible==false" @click="datepickerVisible=true"></i>
+	<el-date-picker  v-if="datepickerVisible==true"
+      v-model="datevalue"
+      type="date"
+      placeholder="选择日期"
+	  @change="datepickerChange"	 
+      :picker-options="pickerOptions0">
+    </el-date-picker>
         <div class="swiper-wrapper">
 		
             <div class="swiper-slide" v-for="a in arr">
@@ -116,7 +144,8 @@
 					
 				</div>
 			</div>  
-        </div>       
+        </div> 
+		
     </div>
 
 
@@ -130,7 +159,7 @@
 			if(num!=null)timeStamp+=parseInt(num);			
 		}else{
 			var timeStamp = new Date(new Date().setHours(0, 0, 0, 0));	
-		} 
+		} 		
 		var now = new Date(timeStamp);	
 				
         var year = now.getFullYear();       //年
@@ -150,13 +179,14 @@
 	</script>
 	 <script>
 	 window.onload=function(){
+	
 		swiper = new Swiper('.swiper-container', { 
 			fade: {
 				crossFade: false,	
 			},	
 			loop : true,
 			onSlideNextStart: function(swiper){
-				console.log('右滑动事件触发了;');
+				console.log('右滑动事件触发了;');				
 				app.dateline=CurentTime(app.dateline,-86400000);
 			},		
 			onSlidePrevStart: function(swiper){
@@ -167,26 +197,37 @@
 	 }
     
     </script>
-<script type="text/javascript">	
-
+<script type="text/javascript">		
 	var storage=window.localStorage;	
 	//console.log(storage);
 	//storage.clear();
-
+	
 	var app = new Vue({
 		el: '#app',
 	    data:{	
 			today:'',
 		    dateline: '',	
 			dataid:[],			
-			arr:[]
+			arr:[],
+			datevalue:'',
+			datepickerVisible:false,
+            pickerOptions0: {
+	          disabledDate(time) {
+	            return time.getTime() > Date.now() - 8.64e7 || time.getTime() < 1359504000000; 
+	          }
+	        },
 	    },
-		methods:{	
+		methods:{
+			datepickerChange:function(){				
+				app.datepickerVisible=false;
+				storage.setItem('datepicker',CurentTime(app.datevalue));
+				window.location.reload();
+			},		
 			
 			ajaxpost:function(){	
 				if(app.dataid.indexOf(this.dateline)>-1){
 					return false;		
-				}
+				}				
 				if(this.today<this.dateline){
 					//console.log(Date.parse(new Date(this.today)));
 					//console.log(Date.parse(new Date(this.dateline)));
@@ -238,9 +279,17 @@
 			
 			
 			
+			
 		},
-		mounted:function(){
-			this.dateline=CurentTime();	
+		mounted:function(){			
+			var datepicker=storage.getItem('datepicker');
+			if(datepicker){	
+				storage.removeItem('datepicker');
+				this.datevalue=datepicker;
+				this.dateline=datepicker;	
+			}else{
+				this.dateline=CurentTime();	
+			}
 			
 		}
 		
