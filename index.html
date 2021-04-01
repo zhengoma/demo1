@@ -249,7 +249,7 @@
 				app.dataid.push(this.dateline);											
 				$.ajax({
 					type:"get",
-					url:"https://open.iciba.com/dsapi/?date="+this.dateline,/*url写异域的请求地址*/
+					url:"http://open.iciba.com/dsapi/?date="+this.dateline,/*url写异域的请求地址*/
 					dataType:"jsonp",					
 					
 					success:function(res){	
